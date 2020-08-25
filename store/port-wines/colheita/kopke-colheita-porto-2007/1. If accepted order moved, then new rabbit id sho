@@ -1,0 +1,109 @@
+1. If accepted order moved, then new rabbit id should be updated new table also
+1. After first returned to hub, rabbit id of an order cleared. Need to be available in order history of last driver. 
+2. developer section will be reformated to use in consignment details page
+3. New algo bug fixes
+4. Move orders
+9. Split excelsheet then merge in background then link email
+Driver KPI
+
+
+1. Connection timed out  for Google distance matrix api during route generation
+2. developer section (Moveing orders) will be redesigned
+3. Driver KPI
+4. After first returned to hub, rabbit id of an order cleared. Need to be available in order history of last driver.
+5. Move orders in consignment details page.
+6. New algo bug fixes
+7. Split excelsheet then merge in background then link email
+8. Remove "%_bkp" TNs storing  in excel upload page
+9. New algo in excelsheet
+
+
+
+CREATE INDEX booking_indonesia_index
+ON rarab2c.booking_indonesia (tracking_id);	
+
+CREATE INDEX booking_indonesia_id_index
+ON rarab2c.booking_indonesia (id);	
+
+CREATE INDEX booking_status_response_index
+ON rarab2c.booking_status_response (tracking_no);	
+
+CREATE INDEX order_fulfillment_indonesia_index
+ON rarab2c.order_fulfillment_indonesia (booking);	
+
+CREATE INDEX booking_zone_mapping_index
+ON rarab2c.booking_zone_mapping (booking);	
+
+CREATE INDEX booking_status_journey_index
+ON rarab2c.booking_status_journey (booking,uid);
+
+
+
+      $scope.moveType = [{"id":1,"label":"Create New Consignment","suggestion":"Add only orders from Non-accepted consignment. Free orders, if exists in accepted consignment."},{"id":4,"label":"Create New Consignment with accepted orders","suggestion":"Add only orders from accepted consignment."},{"id":2,"label":"Move orders to  a Non-accepted Consignment","suggestion":"Add only orders from Non-accepted consignment. Free orders, if exists in accepted consignment."},{"id":3,"label":"Move orders to an Accepted Consignment","suggestion":"You can move all orders except Delivered,Failed,Returned to hub or Returned to WH."}];
+
+
+      $scope.moveOrdersNow = function(){
+     
+      if($scope.m.moveType.id == 1){
+        $scope.createNewConsignment($scope.m.zId,$scope.m.tns,$scope.m.moveDate);
+      }
+      if($scope.m.moveType.id == 2){
+        $scope.moveOrders($scope.m.tns,$scope.m.moveDate,$scope.m.moveMultiOrderToConsignment.zone.zoneId,$scope.m.moveMultiOrderToConsignment.consignmentId);
+      }
+      if($scope.m.moveType.id == 3){
+        $scope.moveToAcceptedConsignment($scope.m.tns,$scope.m.moveDate,$scope.m.consignment.zone.zoneId,$scope.m.consignment.consignmentId,$scope.m.rabbitId);
+      }
+
+      if($scope.m.moveType.id == 4){
+        $scope.createConsignmentWithAcceptedOrders($scope.m.moveMultiOrderToConsignment.zone.zoneId,$scope.m.tns,$scope.m.moveDate,$scope.m.rabbitId);
+      }
+
+      
+    }
+
+    If move returned to hub order
+
+
+
+    else {
+			String driverMobile = bt.getRabbitId();
+			if(driverMobile != null && driverMobile.length() > 5) {
+				sb.append(" "+tid+" ");
+				ee++;
+			}
+		}
+
+
+@Autowired
+	RaRaHelper rara;
+
+
+		try {
+								if(b.getNoShowCount() == 0)
+								rara.setBookingStatusJourney(b.getId(), "accepted1", com.rabitb2c.utils.DateUtil.convertDateTimeToAnotherFormat(bss.getTimestamp()), rabbitId);
+								if(b.getNoShowCount() > 0)
+									rara.setBookingStatusJourney(b.getId(), "accepted2", com.rabitb2c.utils.DateUtil.convertDateTimeToAnotherFormat(bss.getTimestamp()), rabbitId);
+								}
+								catch(Exception e) {
+									e.printStackTrace();
+									System.out.println("In exception");
+								}
+
+
+
+
+
+SELECT * FROM rarab2c.booking_status_journey
+WHERE 
+  CASE WHEN arrived_at_drop_off2 IS NULL AND start_delivery2 IS NULL THEN 
+    rabbit_id1 = :rabbitId AND STR_TO_DATE(parcel_picked1,'%d/%m/%Y')>=STR_TO_DATE(:fromDate,'%d-%m-%Y') AND STR_TO_DATE(parcel_picked1,'%d/%m/%Y')<=STR_TO_DATE(:toDate,'%d-%m-%Y') AND delivered IS NOT NULL
+  ELSE
+  	CASE WHEN rabbit_id2 IS NULL THEN 
+    	rabbit_id1 = :rabbitId AND STR_TO_DATE(parcel_picked2,'%d/%m/%Y')>=STR_TO_DATE(:fromDate,'%d-%m-%Y') AND STR_TO_DATE(parcel_picked2,'%d/%m/%Y')<=STR_TO_DATE(:toDate,'%d-%m-%Y') AND
+    	(failed IS NOT NULL OR returned_after_failed IS NOT NULL OR returned_towh IS NOT NULL OR delivered IS NOT NULL)
+    ELSE 
+    	rabbit_id2 = :rabbitId AND STR_TO_DATE(parcel_picked2,'%d/%m/%Y')>=STR_TO_DATE(:fromDate,'%d-%m-%Y') AND STR_TO_DATE(parcel_picked2,'%d/%m/%Y')<=STR_TO_DATE(:toDate,'%d-%m-%Y') AND
+    	(failed IS NOT NULL OR returned_after_failed IS NOT NULL OR returned_towh IS NOT NULL OR delivered IS NOT NULL)
+    END 
+END
+

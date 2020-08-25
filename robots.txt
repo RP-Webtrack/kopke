@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /public/fonts/
+Disallow: /public/scripts/
+Disallow: /public/video/
+Disallow: /public/bodymovin/
+Disallow: /public/audio/
+Disallow: /wp-admin
+
+
+
